@@ -11,7 +11,7 @@ import SwiftUI
 struct DailyLevelingApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            QuestListView()
         }
     }
 }
