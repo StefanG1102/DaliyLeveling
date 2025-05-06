@@ -10,5 +10,11 @@ struct Quest: Identifiable, Codable {
     var description: String
     var status: QuestStatus
     var reward: String
-    var progress: Double
+    var items: [QuestItem]
+
+    var progress: Double {
+        let total = items.map { Double($0.requiredAmount) }.reduce(0, +)
+        let done = items.map { Double($0.currentAmount) }.reduce(0, +)
+        return total > 0 ? min(done / total, 1.0) : 0.0
+    }
 }

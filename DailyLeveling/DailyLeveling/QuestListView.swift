@@ -6,30 +6,37 @@ struct QuestListView: View {
     var body: some View {
         NavigationStack {
             List {
-                ForEach(viewModel.quests) { quest in
-                    NavigationLink(destination: QuestDetailView(quest: quest)) {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text(quest.title)
-                                .font(.title3)
-                                .fontWeight(.semibold)
-                                .foregroundColor(.primary)
+                // Active & Pending Quests
+                Section(header: Text("Current Quests")) {
+                    let currentQuests = viewModel.quests.filter {
+                        $0.status == .active || $0.status == .pending
+                    }
 
-                            ProgressView(value: quest.progress)
-                                .tint(quest.status == .completed ? .green : .blue)
-
-                            HStack {
-                                Text("Status: \(quest.status.rawValue.capitalized)")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-
-                                Spacer()
-
-                                Text(quest.reward)
-                                    .font(.caption)
-                                    .foregroundColor(.orange)
+                    if currentQuests.isEmpty {
+                        Text("No active quests")
+                            .foregroundColor(.gray)
+                    } else {
+                        ForEach(currentQuests) { quest in
+                            NavigationLink(
+                                destination: QuestDetailView(viewModel: viewModel, quest: quest)
+                            ) {
+                                QuestRowView(quest: quest)
                             }
                         }
-                        .padding(.vertical, 8)
+                    }
+                }
+
+                // Completed Quests
+                Section(header: Text("Completed")) {
+                    let completedQuests = viewModel.quests.filter { $0.status == .completed }
+
+                    if completedQuests.isEmpty {
+                        Text("No quests completed yet")
+                            .foregroundColor(.gray)
+                    } else {
+                        ForEach(completedQuests) { quest in
+                            QuestRowView(quest: quest)
+                        }
                     }
                 }
             }
